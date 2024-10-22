@@ -13,22 +13,22 @@ const createTables = async () => {
   try {
     await pool.query(`
       CREATE TABLE IF NOT EXISTS department (
-        id SERIAL PRIMARY KEY,
+        id_department SERIAL PRIMARY KEY,
         department_name VARCHAR(255) NOT NULL
       );
       
       CREATE TABLE IF NOT EXISTS status (
-        id SERIAL PRIMARY KEY,
+        id_status SERIAL PRIMARY KEY,
         status_name VARCHAR(255) NOT NULL
       );
       
       CREATE TABLE IF NOT EXISTS position (
-        id SERIAL PRIMARY KEY,
+        id_position SERIAL PRIMARY KEY,
         position_name VARCHAR(255) NOT NULL
       );
 
       CREATE TABLE IF NOT EXISTS "user" (
-        id SERIAL PRIMARY KEY,
+        id_user SERIAL PRIMARY KEY,
         last_name VARCHAR(255) NOT NULL,
         first_name VARCHAR(255) NOT NULL,
         middle_name VARCHAR(255),
@@ -40,16 +40,16 @@ const createTables = async () => {
         hire_date DATE NOT NULL,
         department_id INTEGER NOT NULL,
         status_id INTEGER NOT NULL,
-        FOREIGN KEY (department_id) REFERENCES department(id),
-        FOREIGN KEY (status_id) REFERENCES status(id)
+        FOREIGN KEY (department_id) REFERENCES department(id_department),
+        FOREIGN KEY (status_id) REFERENCES status(id_status)
       );
       
       CREATE TABLE IF NOT EXISTS user_position (
         user_id INTEGER NOT NULL,
         position_id INTEGER NOT NULL,
         PRIMARY KEY (user_id, position_id),
-        FOREIGN KEY (user_id) REFERENCES "user" (id) ON DELETE CASCADE,
-        FOREIGN KEY (position_id) REFERENCES position (id) ON DELETE CASCADE
+        FOREIGN KEY (user_id) REFERENCES "user" (id_user) ON DELETE CASCADE,
+        FOREIGN KEY (position_id) REFERENCES position (id_position) ON DELETE CASCADE
       );
     `);
 

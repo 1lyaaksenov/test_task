@@ -1,10 +1,13 @@
 const express = require('express');
+const userController = require('../controllers/actions_with_db');
+
 const router = express.Router();
-const userController = require('../controllers/userController');
 
 router.get('/users', userController.getUsers);
-router.post('/users', userController.createUser);
-router.put('/users/:id', userController.updateUser);
-router.delete('/users/:id', userController.updateStatus);
+router.get('/users/department/:departmentId', userController.getUsersByDepartment);
+router.post('/users', userController.addUser);
+router.get('/users/fullname/:lastName/:firstName/:middleName', userController.getUserByFullName);
+router.put('/users/:userId', userController.updateUser);
+router.delete('/users/:userId', userController.dismissUser);
 
 module.exports = router;
