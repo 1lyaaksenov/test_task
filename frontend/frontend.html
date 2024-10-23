@@ -39,7 +39,12 @@
         <button onclick="filterByFullName()">Фильтровать</button>
         <span id="fullNameError" class="error"></span>
     </div>
-
+    <div class="filter">
+        <label for="departmentFilter">Фильтр по отделу:</label>
+        <input type="text" id="departmentFilter" placeholder="Введите название отдела">
+        <button onclick="filterByDepartment()">Фильтровать</button>
+        <span id="departmentError" class="error"></span>
+    </div>  
     <div class="filter">
         <label for="positionFilter">Фильтр по должности:</label>
         <input type="text" id="positionFilter" placeholder="Введите должность">
@@ -49,6 +54,7 @@
 
     <div class="actions">
         <button onclick="showAddUserForm()">Добавить сотрудников</button>
+        <button onclick="resetFilters()">Отменить фильтры</button> 
     </div>
 
     <table id="usersTable">
@@ -102,7 +108,7 @@
             }
 
             try {
-                const response = await fetch(`http://localhost:3000/api/users/fullname/${lastName}/${firstName}/${middleName}?sort=last_name`);
+                const response = await fetch(`http://localhost:3000/api/users/fullname/${lastName}/${firstName}/${middleName}`);
                 if (!response.ok) {
                     throw new Error('Ошибка фильтрации по ФИО: ' + response.statusText);
                 }
@@ -130,7 +136,7 @@
             }
 
             try {
-                const response = await fetch(`http://localhost:3000/api/users/position/${position}?sort=last_name`);
+                const response = await fetch(`http://localhost:3000/api/users/position/${position}`);
                 if (!response.ok) {
                     throw new Error('Ошибка фильтрации по должности: ' + response.statusText);
                 }
@@ -138,6 +144,33 @@
                 displayUsers(users);
             } catch (error) {
                 console.error('Ошибка при фильтрации по должности:', error);
+            }
+        };
+
+        const filterByDepartment = async () => {
+            const departmentName = document.getElementById('departmentFilter').value.trim();
+            const departmentError = document.getElementById('departmentError');
+
+            departmentError.textContent = '';
+
+            if (!departmentName) {
+                departmentError.textContent = 'Пожалуйста, введите название отдела для фильтрации.';
+                return;
+            }
+
+            try {
+                const response = await fetch(`http://localhost:3000/api/users/department/${departmentName}`);
+                if (!response.ok) {
+                    throw new Error('Ошибка фильтрации по отделу: ' + response.statusText);
+                }
+                const users = await response.json();
+                if (users.length > 0) {
+                    displayUsers(users);
+                } else {
+                    displayUsers([]);
+                }
+            } catch (error) {
+                console.error('Ошибка при фильтрации по отделу:', error);
             }
         };
 
@@ -165,6 +198,18 @@
                 `;
                 usersBody.appendChild(row);
             });
+        };
+
+        const resetFilters = () => {
+            document.getElementById('lastNameFilter').value = '';
+            document.getElementById('firstNameFilter').value = '';
+            document.getElementById('middleNameFilter').value = '';
+            document.getElementById('departmentFilter').value = '';
+            document.getElementById('positionFilter').value = '';
+            document.getElementById('fullNameError').textContent = '';
+            document.getElementById('departmentError').textContent = '';
+            document.getElementById('positionError').textContent = '';
+            fetchUsers();
         };
 
         fetchUsers();
