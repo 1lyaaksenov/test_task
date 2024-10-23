@@ -39,8 +39,8 @@ const createTables = async () => {
         first_name VARCHAR(255) NOT NULL,
         middle_name VARCHAR(255),
         birth_date DATE NOT NULL,
-        passport VARCHAR(11) NOT NULL, -- убрали CHECK для регулярного выражения
-        contact_info VARCHAR(20) NOT NULL, -- убрали CHECK для регулярного выражения
+        passport VARCHAR(11) NOT NULL,
+        contact_info VARCHAR(20) NOT NULL,
         address TEXT NOT NULL,
         salary NUMERIC(12, 2) NOT NULL CHECK (salary > 0),
         hire_date DATE NOT NULL,

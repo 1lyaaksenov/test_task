@@ -71,29 +71,96 @@ const getUsersByPosition = async (req, res) => {
   }
 };
 
-//Для добавления пользователя
+
+// Для создания нового отдела, если он не существует
+const ensureDepartmentExists = async (departmentName) => {
+  if (!departmentName) {
+    throw new Error("Department name cannot be null or empty");
+  }
+
+  const result = await pool.query('SELECT id_department FROM department WHERE department_name = $1', [departmentName]);
+  
+  if (result.rowCount === 0) {
+    const insertResult = await pool.query('INSERT INTO department (department_name) VALUES ($1) RETURNING id_department', [departmentName]);
+    return insertResult.rows[0].id_department;
+  }
+  
+  return result.rows[0].id_department;
+};
+
+
+// Для создания новой должности, если она не существует
+const ensurePositionExists = async (positionName) => {
+  const result = await pool.query('SELECT id_position FROM position WHERE position_name = $1', [positionName]);
+  if (result.rowCount === 0) {
+    const insertResult = await pool.query('INSERT INTO position (position_name) VALUES ($1) RETURNING id_position', [positionName]);
+    return insertResult.rows[0].id_position; 
+  }
+  return result.rows[0].id_position;
+};
+
+
+// Функция для создания пользователя
 const addUser = async (req, res) => {
-  const { lastName, firstName, middleName, birthDate, passport, contactInfo, address, salary, hireDate, departmentId, statusId, positionId } = req.body;
+  const {
+    lastName,
+    firstName,
+    middleName,
+    birthDate,
+    passport,
+    contactInfo,
+    address,
+    salary,
+    hireDate,
+    departmentName,
+    positionName,
+  } = req.body;
+
   try {
-    const resultUser = await pool.query(`
-      INSERT INTO user_test_task (last_name, first_name, middle_name, birth_date, passport, 
-                          contact_info, address, salary, hire_date, department_id, 
-                          status_id)
-      VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11)
+    const departmentId = await ensureDepartmentExists(departmentName);
+    const positionId = await ensurePositionExists(positionName);
+
+    const result = await pool.query(`
+      INSERT INTO user_test_task (
+        last_name, 
+        first_name, 
+        middle_name, 
+        birth_date, 
+        passport, 
+        contact_info, 
+        address, 
+        salary, 
+        hire_date, 
+        department_id, 
+        status_id
+      )
+      VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11) 
       RETURNING id_user
-    `, [lastName, firstName, middleName, birthDate, passport, contactInfo, address, salary, hireDate, departmentId, statusId]);
+    `, [
+      lastName,
+      firstName,
+      middleName,
+      birthDate,
+      passport,
+      contactInfo,
+      address,
+      salary,
+      hireDate,
+      departmentId,
+      1, // вначале всегда не уволен
+    ]);
 
-    const userId = resultUser.rows[0].id_user;
+    const userId = result.rows[0].id_user;
 
-    // Подвязка к должности
     await pool.query(`
       INSERT INTO user_position (user_id, position_id)
       VALUES ($1, $2)
     `, [userId, positionId]);
 
-    res.status(201).json({ message: 'Пользователь добавлен', userId });
-  } catch (err) {
-    res.status(500).json({ error: err.message });
+    res.status(201).json({ id_user: userId, message: 'Пользователь успешно создан' });
+  } catch (error) {
+    console.error("Error creating user", error);
+    res.status(500).json({ error: error.message });
   }
 };
 
@@ -190,3 +257,4 @@ module.exports = {
   dismissUser,
   getUsersByPosition,
 };
+
