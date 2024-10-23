@@ -103,14 +103,15 @@ const getUserByFullName = async (req, res) => {
   try {
     const result = await pool.query(`
       SELECT u.id_user, u.last_name, u.first_name, u.middle_name, u.birth_date, 
-            u.passport, u.contact_info, u.address, u.salary, 
-            u.hire_date, d.department_name, s.status_name, p.position_name
-      FROM user_test_task u
-      JOIN department d ON u.department_id = d.id_department
-      JOIN status s ON u.status_id = s.id_status
-      JOIN position p ON u.position_id = p.id_position
-      WHERE u.last_name = $1 AND u.first_name = $2 AND 
-            (u.middle_name = $3 OR u.middle_name IS NULL)
+        u.passport, u.contact_info, u.address, u.salary, 
+        u.hire_date, d.department_name, s.status_name, p.position_name
+        FROM user_test_task u
+        JOIN department d ON u.department_id = d.id_department
+        JOIN status s ON u.status_id = s.id_status
+        LEFT JOIN user_position up ON u.id_user = up.user_id
+        LEFT JOIN position p ON up.position_id = p.id_position
+        WHERE u.last_name = $1 AND u.first_name = $2 AND 
+        (u.middle_name = $3 OR u.middle_name IS NULL);
     `, [lastName, firstName, middleName]);
     
     if (result.rows.length === 0) {

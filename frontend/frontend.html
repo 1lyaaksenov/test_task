@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Список пользователей</title>
+    <title>Список сотрудников</title>
     <style>
         table {
             width: 100%;
@@ -17,10 +17,40 @@
         th {
             background-color: #f2f2f2;
         }
+        .filter {
+            margin-bottom: 10px;
+        }
+        .actions {
+            margin-top: 10px;
+        }
+        .error {
+            color: red;
+        }
     </style>
 </head>
 <body>
-    <h1>Список пользователей</h1>
+    <h1>Список сотрудников</h1>
+
+    <div class="filter">
+        <label for="fullnameFilter">Фильтр по ФИО:</label>
+        <input type="text" id="lastNameFilter" placeholder="Фамилия">
+        <input type="text" id="firstNameFilter" placeholder="Имя">
+        <input type="text" id="middleNameFilter" placeholder="Отчество">
+        <button onclick="filterByFullName()">Фильтровать</button>
+        <span id="fullNameError" class="error"></span>
+    </div>
+
+    <div class="filter">
+        <label for="positionFilter">Фильтр по должности:</label>
+        <input type="text" id="positionFilter" placeholder="Введите должность">
+        <button onclick="filterByPosition()">Фильтровать</button>
+        <span id="positionError" class="error"></span>
+    </div>
+
+    <div class="actions">
+        <button onclick="showAddUserForm()">Добавить сотрудников</button>
+    </div>
+
     <table id="usersTable">
         <thead>
             <tr>
@@ -37,6 +67,7 @@
                 <th>Отдел</th>
                 <th>Статус</th>
                 <th>Должность</th>
+                <th>Действия</th>
             </tr>
         </thead>
         <tbody id="usersBody">
@@ -47,15 +78,66 @@
         const fetchUsers = async () => {
             try {
                 const response = await fetch('http://localhost:3000/api/users');
-                console.log('Response status:', response.status);
                 if (!response.ok) {
                     throw new Error('Ошибка сети: ' + response.statusText);
                 }
                 const users = await response.json();
-                console.log('Fetched users:', users);
                 displayUsers(users);
             } catch (error) {
-                console.error('Ошибка при получении пользователей:', error);
+                console.error('Ошибка при получении сотрудников:', error);
+            }
+        };
+
+        const filterByFullName = async () => {
+            const lastName = document.getElementById('lastNameFilter').value.trim();
+            const firstName = document.getElementById('firstNameFilter').value.trim();
+            const middleName = document.getElementById('middleNameFilter').value.trim();
+            const fullNameError = document.getElementById('fullNameError');
+
+            fullNameError.textContent = '';
+
+            if (!lastName || !firstName) {
+                fullNameError.textContent = 'Пожалуйста, введите фамилию и имя для фильтрации.';
+                return;
+            }
+
+            try {
+                const response = await fetch(`http://localhost:3000/api/users/fullname/${lastName}/${firstName}/${middleName}?sort=last_name`);
+                if (!response.ok) {
+                    throw new Error('Ошибка фильтрации по ФИО: ' + response.statusText);
+                }
+                
+                const data = await response.json();
+                if (Array.isArray(data)) {
+                    displayUsers(data); 
+                } else {
+                    displayUsers([data]);
+                }
+            } catch (error) {
+                console.error('Ошибка при фильтрации по ФИО:', error);
+            }
+        };
+
+        const filterByPosition = async () => {
+            const position = document.getElementById('positionFilter').value.trim();
+            const positionError = document.getElementById('positionError');
+
+            positionError.textContent = '';
+
+            if (!position) {
+                positionError.textContent = 'Пожалуйста, введите должность для фильтрации.';
+                return;
+            }
+
+            try {
+                const response = await fetch(`http://localhost:3000/api/users/position/${position}?sort=last_name`);
+                if (!response.ok) {
+                    throw new Error('Ошибка фильтрации по должности: ' + response.statusText);
+                }
+                const users = await response.json();
+                displayUsers(users);
+            } catch (error) {
+                console.error('Ошибка при фильтрации по должности:', error);
             }
         };
 
@@ -79,6 +161,7 @@
                     <td>${user.department_name}</td>
                     <td>${user.status_name}</td>
                     <td>${user.position_name}</td>
+                    <td><button onclick="editUser(${user.id_user})">Изменить</button></td>
                 `;
                 usersBody.appendChild(row);
             });
