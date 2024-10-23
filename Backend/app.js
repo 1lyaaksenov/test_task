@@ -10,7 +10,7 @@ const startServer = async () => {
         await initDatabase();
 
         app.use(cors());
-        app.use(express.json());
+        app.use(express.json());    
         app.use('/api', userRoutes);
 
         const PORT = process.env.PORT || 3000;

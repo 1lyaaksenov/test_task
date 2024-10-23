@@ -33,7 +33,7 @@ const createTables = async () => {
     `);
 
     await pool.query(`
-      CREATE TABLE IF NOT EXISTS "user" (
+      CREATE TABLE IF NOT EXISTS user_test_task (
         id_user SERIAL PRIMARY KEY,
         last_name VARCHAR(255) NOT NULL,
         first_name VARCHAR(255) NOT NULL,
@@ -56,7 +56,7 @@ const createTables = async () => {
         user_id INTEGER NOT NULL,
         position_id INTEGER NOT NULL,
         PRIMARY KEY (user_id, position_id),
-        FOREIGN KEY (user_id) REFERENCES "user" (id_user) ON DELETE CASCADE,
+        FOREIGN KEY (user_id) REFERENCES user_test_task (id_user) ON DELETE CASCADE,
         FOREIGN KEY (position_id) REFERENCES position (id_position) ON DELETE CASCADE
       );
     `);
@@ -72,4 +72,4 @@ const initDatabase = async () => {
   return pool;
 };
 
-module.exports = { initDatabase };
+module.exports = { initDatabase, pool };

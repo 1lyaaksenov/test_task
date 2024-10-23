@@ -1,13 +1,13 @@
-const pool = require('../config/init_db');
+const { pool } = require('../config/init_db');
 
 // Для получения всех пользователей
 const getUsers = async (req, res) => {
   try {
     const result = await pool.query(`
       SELECT u.id_user, u.last_name, u.first_name, u.middle_name, u.birth_date, 
-             u.passport, u.contact_info, u.address, u.salary, 
-             u.hire_date, d.department_name, s.status_name, p.position_name
-      FROM "user" u
+            u.passport, u.contact_info, u.address, u.salary, 
+            u.hire_date, d.department_name, s.status_name, p.position_name
+      FROM user_test_task u
       JOIN department d ON u.department_id = d.id_department
       JOIN status s ON u.status_id = s.id_status
       JOIN user_position up ON u.id_user = up.user_id
@@ -25,9 +25,9 @@ const getUsersByDepartment = async (req, res) => {
   try {
     const result = await pool.query(`
       SELECT u.id_user, u.last_name, u.first_name, u.middle_name, u.birth_date, 
-             u.passport, u.contact_info, u.address, u.salary, 
-             u.hire_date, d.department_name, s.status_name, p.position_name
-      FROM "user" u
+            u.passport, u.contact_info, u.address, u.salary, 
+            u.hire_date, d.department_name, s.status_name, p.position_name
+      FROM user_test_task u
       JOIN department d ON u.department_id = d.id_department
       JOIN status s ON u.status_id = s.id_status
       JOIN user_position up ON u.id_user = up.user_id
@@ -51,9 +51,9 @@ const getUsersByPosition = async (req, res) => {
   try {
     const result = await pool.query(`
       SELECT u.id_user, u.last_name, u.first_name, u.middle_name, u.birth_date, 
-             u.passport, u.contact_info, u.address, u.salary, 
-             u.hire_date, d.department_name, s.status_name, p.position_name
-      FROM "user" u
+            u.passport, u.contact_info, u.address, u.salary, 
+            u.hire_date, d.department_name, s.status_name, p.position_name
+      FROM user_test_task u
       JOIN department d ON u.department_id = d.id_department
       JOIN status s ON u.status_id = s.id_status
       JOIN user_position up ON u.id_user = up.user_id
@@ -76,7 +76,7 @@ const addUser = async (req, res) => {
   const { lastName, firstName, middleName, birthDate, passport, contactInfo, address, salary, hireDate, departmentId, statusId, positionId } = req.body;
   try {
     const resultUser = await pool.query(`
-      INSERT INTO "user" (last_name, first_name, middle_name, birth_date, passport, 
+      INSERT INTO user_test_task (last_name, first_name, middle_name, birth_date, passport, 
                           contact_info, address, salary, hire_date, department_id, 
                           status_id)
       VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11)
@@ -97,16 +97,15 @@ const addUser = async (req, res) => {
   }
 };
 
-
 // Для получения пользователя по полному ФИО
 const getUserByFullName = async (req, res) => {
   const { lastName, firstName, middleName } = req.params;
   try {
     const result = await pool.query(`
       SELECT u.id_user, u.last_name, u.first_name, u.middle_name, u.birth_date, 
-             u.passport, u.contact_info, u.address, u.salary, 
-             u.hire_date, d.department_name, s.status_name, p.position_name
-      FROM "user" u
+            u.passport, u.contact_info, u.address, u.salary, 
+            u.hire_date, d.department_name, s.status_name, p.position_name
+      FROM user_test_task u
       JOIN department d ON u.department_id = d.id_department
       JOIN status s ON u.status_id = s.id_status
       JOIN position p ON u.position_id = p.id_position
@@ -129,7 +128,7 @@ const updateUser = async (req, res) => {
   const { lastName, firstName, middleName, birthDate, passport, contactInfo, address, salary, hireDate, departmentId, statusId, positionId } = req.body;
   try {
     const result = await pool.query(`
-      UPDATE "user"
+      UPDATE user_test_task
       SET last_name = $1,
           first_name = $2,
           middle_name = $3,
@@ -166,7 +165,7 @@ const dismissUser = async (req, res) => {
   const { userId } = req.params;
   try {
     const result = await pool.query(`
-      UPDATE "user"
+      UPDATE user_test_task
       SET status_id = (SELECT id_status FROM status WHERE status_name = 'Уволен')
       WHERE id_user = $1
     `, [userId]);
