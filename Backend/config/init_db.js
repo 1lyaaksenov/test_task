@@ -16,25 +16,31 @@ const createTables = async () => {
         id_department SERIAL PRIMARY KEY,
         department_name VARCHAR(255) NOT NULL
       );
-      
+    `);
+
+    await pool.query(`
       CREATE TABLE IF NOT EXISTS status (
         id_status SERIAL PRIMARY KEY,
         status_name VARCHAR(255) NOT NULL
       );
-      
+    `);
+
+    await pool.query(`
       CREATE TABLE IF NOT EXISTS position (
         id_position SERIAL PRIMARY KEY,
         position_name VARCHAR(255) NOT NULL
       );
+    `);
 
+    await pool.query(`
       CREATE TABLE IF NOT EXISTS "user" (
         id_user SERIAL PRIMARY KEY,
         last_name VARCHAR(255) NOT NULL,
         first_name VARCHAR(255) NOT NULL,
         middle_name VARCHAR(255),
         birth_date DATE NOT NULL,
-        passport VARCHAR(11) NOT NULL CHECK (passport ~ '^[0-9]{4}-[0-9]{6}$'),
-        contact_info VARCHAR(20) NOT NULL CHECK (contact_info ~ '^\+?[0-9\-]+$'),
+        passport VARCHAR(11) NOT NULL, -- убрали CHECK для регулярного выражения
+        contact_info VARCHAR(20) NOT NULL, -- убрали CHECK для регулярного выражения
         address TEXT NOT NULL,
         salary NUMERIC(12, 2) NOT NULL CHECK (salary > 0),
         hire_date DATE NOT NULL,
@@ -42,8 +48,10 @@ const createTables = async () => {
         status_id INTEGER NOT NULL,
         FOREIGN KEY (department_id) REFERENCES department(id_department),
         FOREIGN KEY (status_id) REFERENCES status(id_status)
-      );
-      
+    );
+    `);
+
+    await pool.query(`
       CREATE TABLE IF NOT EXISTS user_position (
         user_id INTEGER NOT NULL,
         position_id INTEGER NOT NULL,

@@ -1,6 +1,7 @@
-const express = require('express');
+const express = require('express'); 
 const { initDatabase } = require('./config/init_db');
 const userRoutes = require('./routes/index'); 
+const cors = require('cors'); 
 
 const app = express();
 
@@ -8,6 +9,7 @@ const startServer = async () => {
     try {
         await initDatabase();
 
+        app.use(cors());
         app.use(express.json());
         app.use('/api', userRoutes);
 
