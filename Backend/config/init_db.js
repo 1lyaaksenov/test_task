@@ -39,8 +39,8 @@ const createTables = async () => {
         first_name VARCHAR(255) NOT NULL,
         middle_name VARCHAR(255),
         birth_date DATE NOT NULL,
-        passport VARCHAR(11) NOT NULL,
-        contact_info VARCHAR(20) NOT NULL,
+        passport VARCHAR(11) NOT NULL CHECK (passport ~ '^\\d{4}-\\d{6}$'),
+        contact_info VARCHAR(15) NOT NULL CHECK (contact_info ~ '^[0-9]{1} \\d{3} \\d{3} \\d{2} \\d{2}$' OR contact_info ~ '^\\+\\d{1} \\d{3} \\d{3} \\d{2} \\d{2}$'),
         address TEXT NOT NULL,
         salary NUMERIC(12, 2) NOT NULL CHECK (salary > 0),
         hire_date DATE NOT NULL,
@@ -48,8 +48,8 @@ const createTables = async () => {
         status_id INTEGER NOT NULL,
         FOREIGN KEY (department_id) REFERENCES department(id_department),
         FOREIGN KEY (status_id) REFERENCES status(id_status)
-      );
-    `);
+    );
+  `);
 
     await pool.query(`
       CREATE TABLE IF NOT EXISTS user_position (
@@ -61,8 +61,10 @@ const createTables = async () => {
       );
     `);
 
-    const { rowCount } = await pool.query(`SELECT COUNT(*) FROM status`);
-    if (rowCount === 0) {
+    const { rows } = await pool.query(`SELECT COUNT(*) FROM status`);
+    const count = parseInt(rows[0].count, 10);
+
+    if (count === 0) {
       await pool.query(`
         INSERT INTO status (status_name) VALUES 
         ('Работает'), 
@@ -76,7 +78,7 @@ const createTables = async () => {
     console.log("Все таблицы успешно созданы");
   } catch (error) {
     console.error("Ошибка при создании таблиц", error);
-  }
+  } 
 };
 
 const initDatabase = async () => {

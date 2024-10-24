@@ -78,6 +78,27 @@
                 }
             };
 
+            document.getElementById('passport').addEventListener('input', function (e) {
+                let value = e.target.value.replace(/\D/g, '');
+                if (value.length > 4) {
+                    value = value.slice(0, 4) + '-' + value.slice(4, 10);
+                }
+                e.target.value = value.trim();
+            });
+
+            document.getElementById('contactInfo').addEventListener('input', function (e) {
+                let value = e.target.value.replace(/\D/g, '');
+
+                if (value.length === 0) {
+                    e.target.value = '';
+                    return;
+                }
+
+                value = value.charAt(0) + ' ' + value.substring(1, 4) + ' ' + value.substring(4, 7) + ' ' + value.substring(7, 9) + ' ' + value.substring(9, 11);
+                
+                e.target.value = value.trim();
+            });
+
             document.getElementById('editUserForm').addEventListener('submit', async (e) => {
                 e.preventDefault();
                 const formData = {

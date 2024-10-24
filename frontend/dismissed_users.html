@@ -44,7 +44,7 @@
                 <th>Дата найма</th>
                 <th>Отдел</th>
                 <th>Должность</th>
-                <th>Статус</th> <!-- Добавлен заголовок "Статус" -->
+                <th>Статус</th> 
             </tr>
         </thead>
         <tbody id="dismissedUsersBody">
@@ -68,7 +68,7 @@
                 console.error('Ошибка при получении уволенных сотрудников:', error);
             }
         };
-
+        //изменение формата даты
         const formatDate = (dateString) => {
             const options = { year: 'numeric', month: '2-digit', day: '2-digit' };
             return new Date(dateString).toLocaleDateString('ru-RU', options);

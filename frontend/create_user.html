@@ -4,6 +4,13 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Добавление сотрудника</title>
+    <style>
+        input {
+            margin-bottom: 10px;
+            padding: 5px;
+            font-size: 16px;
+        }
+    </style>
 </head>
 <body>
     <h1>Создание сотрудника</h1>
@@ -26,11 +33,11 @@
         </div>
         <div>
             <label for="passport">Серия/номер паспорта:</label>
-            <input type="text" id="passport" required placeholder="Серия номер" maxlength="10" title="Введите корректный формат: 1234 567890">
+            <input type="text" id="passport" required placeholder="1234-567890" maxlength="11" title="Введите корректный формат: 1234-567890">
         </div>
         <div>
             <label for="contactInfo">Контактная информация:</label>
-            <input type="text" id="contactInfo" required placeholder="Контактная информация" title="Введите корректный номер телефона">
+            <input type="text" id="contactInfo" required placeholder="8 999 999 99 99" maxlength="16" title="Введите корректный номер телефона">
         </div>
         <div>
             <label for="address">Адрес проживания:</label>
@@ -63,6 +70,28 @@
         document.getElementById('backToListBtn').addEventListener('click', () => {
             window.location.href = 'main.html';
         });
+
+        // Для маски паспорта
+        document.getElementById('passport').addEventListener('input', function (e) {
+            let value = e.target.value.replace(/\D/g, '');
+            if (value.length > 4) {
+                value = value.substring(0, 4) + '-' + value.substring(4, 10);
+            }
+            e.target.value = value;
+        });
+
+        document.getElementById('contactInfo').addEventListener('input', function (e) {
+            let value = e.target.value.replace(/\D/g, '');
+
+            if (value.length === 0) {
+                e.target.value = '';
+                return;
+            }
+                value = value.charAt(0) + ' ' + value.substring(1, 4) + ' ' + value.substring(4, 7) + ' ' + value.substring(7, 9) + ' ' + value.substring(9, 11);
+
+            e.target.value = value.trim();
+        });
+
         document.getElementById('registrationForm').addEventListener('submit', async (event) => {
             event.preventDefault();
 
