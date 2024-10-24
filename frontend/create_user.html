@@ -83,7 +83,7 @@
             console.log('Отправляемые данные:', formData);
 
             const messageDiv = document.getElementById('message');
-            messageDiv.textContent = ''; // Очистка предыдущего сообщения
+            messageDiv.textContent = '';
 
             try {
                 const response = await fetch('http://localhost:3000/api/users', {

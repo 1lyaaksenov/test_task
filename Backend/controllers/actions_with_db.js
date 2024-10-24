@@ -190,11 +190,62 @@ const getUserByFullName = async (req, res) => {
   }
 };
 
-//ДЛя обновления пользователя
+const getUserById = async (req, res) => {
+  const { userId } = req.params;
+
+  try {
+    const result = await pool.query(`
+      SELECT 
+        u.id_user,
+        u.last_name,
+        u.first_name,
+        u.middle_name,
+        u.birth_date,
+        u.passport,
+        u.contact_info,
+        u.address,
+        u.salary,
+        u.hire_date,
+        d.department_name,
+        s.status_name,
+        p.position_name
+      FROM 
+        user_test_task u
+      JOIN 
+        department d ON u.department_id = d.id_department
+      JOIN 
+        status s ON u.status_id = s.id_status
+      JOIN 
+        user_position up ON u.id_user = up.user_id
+      JOIN 
+        position p ON up.position_id = p.id_position
+      WHERE 
+        u.id_user = $1
+    `, [userId]);
+
+    if (result.rows.length === 0) {
+      return res.status(404).json({ message: 'Пользователь не найден' });
+    }
+
+    return res.status(200).json(result.rows[0]);
+  } catch (error) {
+    console.error('Ошибка получения данных пользователя:', error);
+    return res.status(500).json({ error: 'Ошибка при выполнении запроса на получение данных пользователя' });
+  }
+};
+
+// Для обновления пользователя
 const updateUser = async (req, res) => {
   const { userId } = req.params;
-  const { lastName, firstName, middleName, birthDate, passport, contactInfo, address, salary, hireDate, departmentId, statusId, positionId } = req.body;
+  const { 
+    lastName, firstName, middleName, birthDate, passport, contactInfo, address, salary, hireDate, 
+    departmentName, statusId = 1, positionName
+  } = req.body;
+
   try {
+    const positionId = await ensurePositionExists(positionName);
+    const departmentId = await ensureDepartmentExists(departmentName);
+
     const result = await pool.query(`
       UPDATE user_test_task
       SET last_name = $1,
@@ -210,7 +261,9 @@ const updateUser = async (req, res) => {
           status_id = $11
       WHERE id_user = $12
       RETURNING id_user
-    `, [lastName, firstName, middleName, birthDate, passport, contactInfo, address, salary, hireDate, departmentId, statusId, userId]);
+    `, [
+      lastName, firstName, middleName, birthDate, passport, contactInfo, address, salary, hireDate, departmentId, statusId, userId
+    ]);
 
     if (result.rows.length === 0) {
       return res.status(404).json({ message: 'Пользователь не найден' });
@@ -224,9 +277,11 @@ const updateUser = async (req, res) => {
 
     res.status(200).json({ message: 'Пользователь обновлен' });
   } catch (err) {
+    console.error('Ошибка обновления пользователя:', err);
     res.status(500).json({ error: err.message });
   }
 };
+
 
 // Для увольнения пользователя(статус в таблице status)
 const dismissUser = async (req, res) => {
@@ -256,5 +311,6 @@ module.exports = {
   updateUser,
   dismissUser,
   getUsersByPosition,
+  getUserById
 };
 

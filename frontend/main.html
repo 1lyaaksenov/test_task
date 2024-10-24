@@ -81,6 +81,9 @@
     </table>
 
     <script>
+        const editUser = (userId) => {
+            window.location.href = `edit_user.html?userId=${userId}`;
+        };
         document.getElementById('addUserBtn').addEventListener('click', () => {
             window.location.href = 'create_user.html';
         });

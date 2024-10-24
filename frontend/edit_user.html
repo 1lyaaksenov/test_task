@@ -1,0 +1,126 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Изменение данных сотрудника</title>
+</head>
+<body>
+
+    <h1>Изменить данные сотрудника</h1>
+
+    <form id="editUserForm">
+        <label for="lastName">Фамилия:</label>
+        <input type="text" id="lastName" name="lastName" required placeholder="Введите фамилию">
+
+        <label for="firstName">Имя:</label>
+        <input type="text" id="firstName" name="firstName" required placeholder="Введите имя">
+
+        <label for="middleName">Отчество:</label>
+        <input type="text" id="middleName" name="middleName" placeholder="Введите отчество">
+
+        <label for="birthDate">Дата рождения:</label>
+        <input type="date" id="birthDate" name="birthDate" required>
+
+        <label for="passport">Паспорт:</label>
+        <input type="text" id="passport" name="passport" required placeholder="Серия номер" maxlength="10" title="Введите корректный формат: 1234 567890">
+
+        <label for="contactInfo">Контактная информация:</label>
+        <input type="text" id="contactInfo" name="contactInfo" required placeholder="Контактная информация" title="Введите корректный номер телефона">
+
+        <label for="address">Адрес:</label>
+        <input type="text" id="address" name="address" required placeholder="Введите адрес">
+
+        <label for="salary">Зарплата:</label>
+        <input type="number" id="salary" name="salary" required placeholder="Введите зарплату" min="0" step="0.01">
+
+        <label for="hireDate">Дата поступления на работу:</label>
+        <input type="date" id="hireDate" name="hireDate" required>
+
+        <label for="departmentName">Отдел:</label>
+        <input type="text" id="departmentName" name="departmentName" placeholder="Введите отдел">
+
+        <label for="positionName">Должность:</label>
+        <input type="text" id="positionName" name="positionName" placeholder="Введите должность">
+
+        <div>
+            <button type="submit">Сохранить изменения</button>
+            <button id="backToListBtn" type="button">Вернуться к списку сотрудников</button>
+        </div>
+    </form>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const userId = new URLSearchParams(window.location.search).get('userId');
+
+            const fetchUser = async () => {
+                try {
+                    const response = await fetch(`http://localhost:3000/api/users/${userId}`);
+                    if (!response.ok) {
+                        throw new Error('Ошибка получения данных пользователя');
+                    }
+                    const user = await response.json();
+
+                    document.getElementById('lastName').value = user.last_name || '';
+                    document.getElementById('firstName').value = user.first_name || '';
+                    document.getElementById('middleName').value = user.middle_name || '';
+                    document.getElementById('birthDate').value = user.birth_date ? user.birth_date.split('T')[0] : '';
+                    document.getElementById('passport').value = user.passport || '';
+                    document.getElementById('contactInfo').value = user.contact_info || '';
+                    document.getElementById('address').value = user.address || '';
+                    document.getElementById('salary').value = user.salary || '';
+                    document.getElementById('departmentName').value = user.department_name || '';
+                    document.getElementById('positionName').value = user.position_name || '';
+                    document.getElementById('hireDate').value = user.hire_date ? user.hire_date.split('T')[0] : '';
+                } catch (error) {
+                    console.error('Ошибка:', error);
+                    alert('Не удалось загрузить данные пользователя.');
+                }
+            };
+
+            document.getElementById('editUserForm').addEventListener('submit', async (e) => {
+                e.preventDefault();
+                const formData = {
+                    lastName: document.getElementById('lastName').value,
+                    firstName: document.getElementById('firstName').value,
+                    middleName: document.getElementById('middleName').value,
+                    birthDate: document.getElementById('birthDate').value,
+                    passport: document.getElementById('passport').value,
+                    contactInfo: document.getElementById('contactInfo').value,
+                    address: document.getElementById('address').value,
+                    salary: parseFloat(document.getElementById('salary').value),
+                    hireDate: document.getElementById('hireDate').value,
+                    departmentName: document.getElementById('departmentName').value,
+                    positionName: document.getElementById('positionName').value,
+                };
+
+                try {
+                    const response = await fetch(`http://localhost:3000/api/users/${userId}`, {
+                        method: 'PUT',
+                        headers: {
+                            'Content-Type': 'application/json',
+                        },
+                        body: JSON.stringify(formData),
+                    });
+
+                    if (!response.ok) {
+                        throw new Error('Ошибка обновления пользователя');
+                    }
+
+                    alert('Данные сотрудника обновлены!');
+                    window.location.href = 'main.html';
+                } catch (error) {
+                    console.error('Ошибка обновления:', error);
+                    alert('Не удалось обновить данные сотрудника.');
+                }
+            });
+
+            document.getElementById('backToListBtn').addEventListener('click', () => {
+                window.location.href = 'main.html';
+            });
+
+            fetchUser();
+        });
+    </script>
+</body>
+</html>

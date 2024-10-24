@@ -10,5 +10,6 @@ router.get('/users/fullname/:lastName/:firstName/:middleName', userController.ge
 router.post('/users', userController.addUser);
 router.put('/users/:userId', userController.updateUser);
 router.delete('/users/:userId', userController.dismissUser);
+router.get('/users/:userId', userController.getUserById);
 
 module.exports = router;
