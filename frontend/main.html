@@ -54,7 +54,8 @@
 
     <div class="actions">
         <button id="addUserBtn">Добавить сотрудника</button>
-        <button onclick="resetFilters()">Отменить фильтры</button> 
+        <button onclick="resetFilters()">Отменить фильтры</button>
+        <button id="viewDismissedBtn">Посмотреть уволенных сотрудников</button>
     </div>
 
     <table id="usersTable">
@@ -84,9 +85,15 @@
         const editUser = (userId) => {
             window.location.href = `edit_user.html?userId=${userId}`;
         };
+
         document.getElementById('addUserBtn').addEventListener('click', () => {
             window.location.href = 'create_user.html';
         });
+
+        document.getElementById('viewDismissedBtn').addEventListener('click', () => {
+            window.location.href = 'dismissed_users.html';
+        });
+
         const fetchUsers = async () => {
             try {
                 const response = await fetch('http://localhost:3000/api/users');
@@ -97,6 +104,23 @@
                 displayUsers(users);
             } catch (error) {
                 console.error('Ошибка при получении сотрудников:', error);
+            }
+        };
+
+        const dismissUser = async (userId) => {
+            if (confirm('Вы уверены, что хотите уволить этого сотрудника?')) {
+                try {
+                    const response = await fetch(`http://localhost:3000/api/users/${userId}`, {
+                        method: 'DELETE',
+                    });
+                    if (!response.ok) {
+                        throw new Error('Ошибка при увольнении сотрудника: ' + response.statusText);
+                    }
+                    alert('Сотрудник успешно уволен!');
+                    fetchUsers();
+                } catch (error) {
+                    console.error('Ошибка при увольнении:', error);
+                }
             }
         };
 
@@ -180,6 +204,11 @@
             }
         };
 
+        const formatDate = (dateString) => {
+            const options = { year: 'numeric', month: '2-digit', day: '2-digit' };
+            return new Date(dateString).toLocaleDateString('ru-RU', options);
+        };
+
         const displayUsers = (users) => {
             const usersBody = document.getElementById('usersBody');
             usersBody.innerHTML = '';
@@ -191,16 +220,19 @@
                     <td>${user.last_name}</td>
                     <td>${user.first_name}</td>
                     <td>${user.middle_name}</td>
-                    <td>${user.birth_date}</td>
+                    <td>${formatDate(user.birth_date)}</td>
                     <td>${user.passport}</td>
                     <td>${user.contact_info}</td>
                     <td>${user.address}</td>
                     <td>${user.salary}</td>
-                    <td>${user.hire_date}</td>
+                    <td>${formatDate(user.hire_date)}</td>
                     <td>${user.department_name}</td>
                     <td>${user.status_name}</td>
                     <td>${user.position_name}</td>
-                    <td><button onclick="editUser(${user.id_user})">Изменить</button></td>
+                    <td>
+                        <button onclick="editUser(${user.id_user})">Изменить</button>
+                        <button onclick="dismissUser(${user.id_user})">Уволить</button>
+                    </td>
                 `;
                 usersBody.appendChild(row);
             });

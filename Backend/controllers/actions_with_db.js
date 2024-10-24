@@ -12,6 +12,26 @@ const getUsers = async (req, res) => {
       JOIN status s ON u.status_id = s.id_status
       JOIN user_position up ON u.id_user = up.user_id
       JOIN position p ON up.position_id = p.id_position
+      WHERE u.status_id = 1
+    `);
+    res.status(200).json(result.rows);
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+};
+// Для получения всех пользователей
+const getDismissUsers = async (req, res) => {
+  try {
+    const result = await pool.query(`
+      SELECT u.id_user, u.last_name, u.first_name, u.middle_name, u.birth_date, 
+            u.passport, u.contact_info, u.address, u.salary, 
+            u.hire_date, d.department_name, s.status_name, p.position_name
+      FROM user_test_task u
+      JOIN department d ON u.department_id = d.id_department
+      JOIN status s ON u.status_id = s.id_status
+      JOIN user_position up ON u.id_user = up.user_id
+      JOIN position p ON up.position_id = p.id_position
+      WHERE u.status_id = 2
     `);
     res.status(200).json(result.rows);
   } catch (err) {
@@ -282,14 +302,13 @@ const updateUser = async (req, res) => {
   }
 };
 
-
 // Для увольнения пользователя(статус в таблице status)
 const dismissUser = async (req, res) => {
   const { userId } = req.params;
   try {
     const result = await pool.query(`
       UPDATE user_test_task
-      SET status_id = (SELECT id_status FROM status WHERE status_name = 'Уволен')
+      SET status_id = 2
       WHERE id_user = $1
     `, [userId]);
 
@@ -311,6 +330,7 @@ module.exports = {
   updateUser,
   dismissUser,
   getUsersByPosition,
-  getUserById
+  getUserById,
+  getDismissUsers
 };
 

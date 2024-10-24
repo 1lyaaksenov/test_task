@@ -48,7 +48,7 @@ const createTables = async () => {
         status_id INTEGER NOT NULL,
         FOREIGN KEY (department_id) REFERENCES department(id_department),
         FOREIGN KEY (status_id) REFERENCES status(id_status)
-    );
+      );
     `);
 
     await pool.query(`
@@ -61,9 +61,21 @@ const createTables = async () => {
       );
     `);
 
-    console.log("All tables created successfully");
+    const { rowCount } = await pool.query(`SELECT COUNT(*) FROM status`);
+    if (rowCount === 0) {
+      await pool.query(`
+        INSERT INTO status (status_name) VALUES 
+        ('Работает'), 
+        ('Уволен')
+      `);
+      console.log("Статусы 'Работает' и 'Уволен' добавлены в таблицу status.");
+    } else {
+      console.log("Таблица status уже содержит данные.");
+    }
+
+    console.log("Все таблицы успешно созданы");
   } catch (error) {
-    console.error("Error creating tables", error);
+    console.error("Ошибка при создании таблиц", error);
   }
 };
 
