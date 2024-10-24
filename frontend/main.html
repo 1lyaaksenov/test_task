@@ -5,26 +5,86 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Список сотрудников</title>
     <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f4f4f4;
+            margin: 0;
+            padding: 20px;
+        }
+
+        h1 {
+            text-align: center;
+            color: #333;
+        }
+
+        .filter, .actions {
+            background-color: #fff;
+            padding: 15px;
+            border-radius: 5px;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+            margin-bottom: 20px;
+        }
+
+        .filter label {
+            margin-right: 10px;
+        }
+
+        input[type="text"], input[type="date"], input[type="number"] {
+            padding: 8px;
+            margin: 5px 0;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+            width: calc(25% - 20px);
+        }
+
+        button {
+            background-color: #007BFF;
+            color: white;
+            border: none;
+            padding: 10px 15px;
+            border-radius: 4px;
+            cursor: pointer;
+            margin-right: 10px;
+        }
+
+        button:hover {
+            background-color: #0056b3;
+        }
+
         table {
             width: 100%;
             border-collapse: collapse;
+            margin-top: 10px;
+            background-color: #fff;
+            border-radius: 5px;
+            overflow: hidden;
         }
+
         th, td {
             border: 1px solid #ddd;
             padding: 8px;
             text-align: left;
         }
+
         th {
             background-color: #f2f2f2;
         }
-        .filter {
-            margin-bottom: 10px;
-        }
-        .actions {
-            margin-top: 10px;
-        }
+
         .error {
             color: red;
+            font-size: 0.9em;
+        }
+
+        @media (max-width: 768px) {
+            input[type="text"], input[type="date"], input[type="number"] {
+                width: calc(100% - 20px);
+                margin-bottom: 10px;
+            }
+
+            button {
+                width: 100%;
+                margin: 5px 0;
+            }
         }
     </style>
 </head>
@@ -74,7 +134,7 @@
                 <th>Отдел</th>
                 <th>Статус</th>
                 <th>Должность</th>
-                <th>Действия</th>
+                <th colspan="2">Действия</th>
             </tr>
         </thead>
         <tbody id="usersBody">
@@ -229,10 +289,8 @@
                     <td>${user.department_name}</td>
                     <td>${user.status_name}</td>
                     <td>${user.position_name}</td>
-                    <td>
-                        <button onclick="editUser(${user.id_user})">Изменить</button>
-                        <button onclick="dismissUser(${user.id_user})">Уволить</button>
-                    </td>
+                    <td><button onclick="editUser(${user.id_user})">Изменить</button></td>
+                    <td><button onclick="dismissUser(${user.id_user})">Уволить</button></td>
                 `;
                 usersBody.appendChild(row);
             });

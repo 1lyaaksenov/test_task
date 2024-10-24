@@ -5,20 +5,63 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Уволенные сотрудники</title>
     <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f4f4f4;
+            margin: 0;
+            padding: 20px;
+        }
+
+        h1 {
+            text-align: center;
+            color: #333;
+        }
+
+        .actions {
+            background-color: #fff;
+            padding: 15px;
+            border-radius: 5px;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+            margin-bottom: 20px;
+        }
+
+        button {
+            background-color: #007BFF;
+            color: white;
+            border: none;
+            padding: 10px 15px;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+
+        button:hover {
+            background-color: #0056b3;
+        }
+
         table {
             width: 100%;
             border-collapse: collapse;
+            margin-top: 10px;
+            background-color: #fff;
+            border-radius: 5px;
+            overflow: hidden;
         }
+
         th, td {
             border: 1px solid #ddd;
             padding: 8px;
             text-align: left;
         }
+
         th {
             background-color: #f2f2f2;
         }
-        .actions {
-            margin-top: 10px;
+
+        @media (max-width: 768px) {
+            button {
+                width: 100%;
+                margin-bottom: 10px;
+            }
         }
     </style>
 </head>
@@ -68,7 +111,7 @@
                 console.error('Ошибка при получении уволенных сотрудников:', error);
             }
         };
-        //изменение формата даты
+
         const formatDate = (dateString) => {
             const options = { year: 'numeric', month: '2-digit', day: '2-digit' };
             return new Date(dateString).toLocaleDateString('ru-RU', options);
@@ -93,7 +136,7 @@
                     <td>${formatDate(user.hire_date)}</td>
                     <td>${user.department_name}</td>
                     <td>${user.position_name}</td>
-                    <td>${user.status_name}</td> <!-- Добавлено значение статуса -->
+                    <td>${user.status_name}</td>
                 `;
                 dismissedUsersBody.appendChild(row);
             });

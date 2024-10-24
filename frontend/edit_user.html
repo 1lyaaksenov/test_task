@@ -4,50 +4,133 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Изменение данных сотрудника</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f4f4f4;
+            margin: 0;
+            padding: 20px;
+        }
+
+        h1 {
+            text-align: center;
+            color: #333;
+        }
+
+        form {
+            background-color: #fff;
+            padding: 20px;
+            border-radius: 5px;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+            margin: 0 auto;
+            max-width: 600px;
+        }
+
+        div {
+            margin-bottom: 15px;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 3px;
+            font-weight: bold;
+        }
+
+        input {
+            width: 98%;
+            padding: 5px;
+            font-size: 16px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+        }
+
+        button {
+            background-color: #007BFF;
+            color: white;
+            border: none;
+            padding: 10px 15px;
+            border-radius: 4px;
+            cursor: pointer;
+            margin-right: 10px;
+        }
+
+        button:hover {
+            background-color: #0056b3;
+        }
+
+        #message {
+            margin-top: 20px;
+            text-align: center;
+            font-size: 18px;
+            color: green;
+        }
+
+        @media (max-width: 768px) {
+            form {
+                padding: 15px;
+            }
+
+            button {
+                width: 100%;
+                margin-bottom: 10px;
+            }
+        }
+    </style>
 </head>
 <body>
-
     <h1>Изменить данные сотрудника</h1>
-
     <form id="editUserForm">
-        <label for="lastName">Фамилия:</label>
-        <input type="text" id="lastName" name="lastName" required placeholder="Введите фамилию">
-
-        <label for="firstName">Имя:</label>
-        <input type="text" id="firstName" name="firstName" required placeholder="Введите имя">
-
-        <label for="middleName">Отчество:</label>
-        <input type="text" id="middleName" name="middleName" placeholder="Введите отчество">
-
-        <label for="birthDate">Дата рождения:</label>
-        <input type="date" id="birthDate" name="birthDate" required>
-
-        <label for="passport">Паспорт:</label>
-        <input type="text" id="passport" name="passport" required placeholder="Серия номер" maxlength="10" title="Введите корректный формат: 1234 567890">
-
-        <label for="contactInfo">Контактная информация:</label>
-        <input type="text" id="contactInfo" name="contactInfo" required placeholder="Контактная информация" title="Введите корректный номер телефона">
-
-        <label for="address">Адрес:</label>
-        <input type="text" id="address" name="address" required placeholder="Введите адрес">
-
-        <label for="salary">Зарплата:</label>
-        <input type="number" id="salary" name="salary" required placeholder="Введите зарплату" min="0" step="0.01">
-
-        <label for="hireDate">Дата поступления на работу:</label>
-        <input type="date" id="hireDate" name="hireDate" required>
-
-        <label for="departmentName">Отдел:</label>
-        <input type="text" id="departmentName" name="departmentName" placeholder="Введите отдел">
-
-        <label for="positionName">Должность:</label>
-        <input type="text" id="positionName" name="positionName" placeholder="Введите должность">
-
+        <div>
+            <label for="lastName">Фамилия:</label>
+            <input type="text" id="lastName" required placeholder="Введите фамилию">
+        </div>
+        <div>
+            <label for="firstName">Имя:</label>
+            <input type="text" id="firstName" required placeholder="Введите имя">
+        </div>
+        <div>
+            <label for="middleName">Отчество:</label>
+            <input type="text" id="middleName" placeholder="Введите отчество">
+        </div>
+        <div>
+            <label for="birthDate">Дата рождения:</label>
+            <input type="date" id="birthDate" required>
+        </div>
+        <div>
+            <label for="passport">Серия/номер паспорта:</label>
+            <input type="text" id="passport" required placeholder="1234-567890" maxlength="11" title="Введите корректный формат: 1234-567890">
+        </div>
+        <div>
+            <label for="contactInfo">Контактная информация:</label>
+            <input type="text" id="contactInfo" required placeholder="8 999 999 99 99" maxlength="16" title="Введите корректный номер телефона">
+        </div>
+        <div>
+            <label for="address">Адрес проживания:</label>
+            <input type="text" id="address" required placeholder="Введите адрес">
+        </div>
+        <div>
+            <label for="departmentName">Отдел:</label>
+            <input type="text" id="departmentName" required placeholder="Введите отдел">
+        </div>
+        <div>
+            <label for="positionName">Должность:</label>
+            <input type="text" id="positionName" required placeholder="Введите должность">
+        </div>
+        <div>
+            <label for="salary">Размер зарплаты:</label>
+            <input type="number" id="salary" required placeholder="Введите зарплату" min="0" step="0.01">
+        </div>
+        <div>
+            <label for="hireDate">Дата принятия на работу:</label>
+            <input type="date" id="hireDate" required>
+        </div>
         <div>
             <button type="submit">Сохранить изменения</button>
-            <button id="backToListBtn" type="button">Вернуться к списку сотрудников</button>
+            <button type="button" id="backToListBtn">Вернуться к списку сотрудников</button>
         </div>
     </form>
+    
+    <div id="message"></div>
 
     <script>
         document.addEventListener('DOMContentLoaded', () => {
@@ -81,21 +164,18 @@
             document.getElementById('passport').addEventListener('input', function (e) {
                 let value = e.target.value.replace(/\D/g, '');
                 if (value.length > 4) {
-                    value = value.slice(0, 4) + '-' + value.slice(4, 10);
+                    value = value.substring(0, 4) + '-' + value.substring(4, 10);
                 }
                 e.target.value = value.trim();
             });
 
             document.getElementById('contactInfo').addEventListener('input', function (e) {
                 let value = e.target.value.replace(/\D/g, '');
-
                 if (value.length === 0) {
                     e.target.value = '';
                     return;
                 }
-
                 value = value.charAt(0) + ' ' + value.substring(1, 4) + ' ' + value.substring(4, 7) + ' ' + value.substring(7, 9) + ' ' + value.substring(9, 11);
-                
                 e.target.value = value.trim();
             });
 
@@ -115,6 +195,9 @@
                     positionName: document.getElementById('positionName').value,
                 };
 
+                const messageDiv = document.getElementById('message');
+                messageDiv.textContent = '';
+
                 try {
                     const response = await fetch(`http://localhost:3000/api/users/${userId}`, {
                         method: 'PUT',
@@ -125,14 +208,15 @@
                     });
 
                     if (!response.ok) {
-                        throw new Error('Ошибка обновления пользователя');
+                        const errorResponse = await response.json();
+                        throw new Error('Ошибка при обновлении данных: ' + (errorResponse.message || response.statusText));
                     }
 
-                    alert('Данные сотрудника обновлены!');
-                    window.location.href = 'main.html';
+                    messageDiv.textContent = 'Данные сотрудника успешно обновлены!';
+                    document.getElementById('editUserForm').reset();
                 } catch (error) {
-                    console.error('Ошибка обновления:', error);
-                    alert('Не удалось обновить данные сотрудника.');
+                    console.error('Ошибка при обновлении данных:', error);
+                    messageDiv.textContent = 'Ошибка при обновлении данных. Пожалуйста, попробуйте еще раз. ' + error.message;
                 }
             });
 
