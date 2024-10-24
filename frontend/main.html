@@ -53,7 +53,7 @@
     </div>
 
     <div class="actions">
-        <button onclick="showAddUserForm()">Добавить сотрудников</button>
+        <button id="addUserBtn">Добавить сотрудника</button>
         <button onclick="resetFilters()">Отменить фильтры</button> 
     </div>
 
@@ -81,6 +81,9 @@
     </table>
 
     <script>
+        document.getElementById('addUserBtn').addEventListener('click', () => {
+            window.location.href = 'create_user.html';
+        });
         const fetchUsers = async () => {
             try {
                 const response = await fetch('http://localhost:3000/api/users');
@@ -113,7 +116,7 @@
                     throw new Error('Ошибка фильтрации по ФИО: ' + response.statusText);
                 }
                 
-                const data = await response.json();
+                const data = await response.json(); 
                 if (Array.isArray(data)) {
                     displayUsers(data); 
                 } else {
