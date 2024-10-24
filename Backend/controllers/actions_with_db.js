@@ -19,7 +19,8 @@ const getUsers = async (req, res) => {
     res.status(500).json({ error: err.message });
   }
 };
-// Для получения всех пользователей
+
+// Для получения всех уволенных пользователей
 const getDismissUsers = async (req, res) => {
   try {
     const result = await pool.query(`
@@ -33,11 +34,18 @@ const getDismissUsers = async (req, res) => {
       JOIN position p ON up.position_id = p.id_position
       WHERE u.status_id = 2
     `);
+    
+    if (result.rows.length === 0) {
+      return res.status(404).json({ message: 'Уволенные пользователи не найдены' });
+    }
+
     res.status(200).json(result.rows);
   } catch (err) {
-    res.status(500).json({ error: err.message });
+    console.error('Ошибка при получении уволенных пользователей:', err);
+    res.status(500).json({ error: 'Ошибка при получении уволенных пользователей' });
   }
 };
+
 
 // Для получения пользователей по отделу
 const getUsersByDepartment = async (req, res) => {

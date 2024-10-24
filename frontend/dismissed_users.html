@@ -1,0 +1,105 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Уволенные сотрудники</title>
+    <style>
+        table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+        th, td {
+            border: 1px solid #ddd;
+            padding: 8px;
+            text-align: left;
+        }
+        th {
+            background-color: #f2f2f2;
+        }
+        .actions {
+            margin-top: 10px;
+        }
+    </style>
+</head>
+<body>
+    <h1>Уволенные сотрудники</h1>
+
+    <div class="actions">
+        <button id="viewActiveBtn">Посмотреть активных сотрудников</button>
+    </div>
+
+    <table id="dismissedUsersTable">
+        <thead>
+            <tr>
+                <th>ID</th>
+                <th>Фамилия</th>
+                <th>Имя</th>
+                <th>Отчество</th>
+                <th>Дата рождения</th>
+                <th>Паспорт</th>
+                <th>Контактная информация</th>
+                <th>Адрес</th>
+                <th>Зарплата</th>
+                <th>Дата найма</th>
+                <th>Отдел</th>
+                <th>Должность</th>
+                <th>Статус</th> <!-- Добавлен заголовок "Статус" -->
+            </tr>
+        </thead>
+        <tbody id="dismissedUsersBody">
+        </tbody>
+    </table>
+
+    <script>
+        document.getElementById('viewActiveBtn').addEventListener('click', () => {
+            window.location.href = 'main.html';
+        });
+
+        const fetchDismissedUsers = async () => {
+            try {
+                const response = await fetch('http://localhost:3000/api/users/dismissed');
+                if (!response.ok) {
+                    throw new Error('Ошибка сети: ' + response.statusText);
+                }
+                const dismissedUsers = await response.json();
+                displayDismissedUsers(dismissedUsers);
+            } catch (error) {
+                console.error('Ошибка при получении уволенных сотрудников:', error);
+            }
+        };
+
+        const formatDate = (dateString) => {
+            const options = { year: 'numeric', month: '2-digit', day: '2-digit' };
+            return new Date(dateString).toLocaleDateString('ru-RU', options);
+        };
+
+        const displayDismissedUsers = (users) => {
+            const dismissedUsersBody = document.getElementById('dismissedUsersBody');
+            dismissedUsersBody.innerHTML = '';
+
+            users.forEach(user => {
+                const row = document.createElement('tr');
+                row.innerHTML = `
+                    <td>${user.id_user}</td>
+                    <td>${user.last_name}</td>
+                    <td>${user.first_name}</td>
+                    <td>${user.middle_name}</td>
+                    <td>${formatDate(user.birth_date)}</td>
+                    <td>${user.passport}</td>
+                    <td>${user.contact_info}</td>
+                    <td>${user.address}</td>
+                    <td>${user.salary}</td>
+                    <td>${formatDate(user.hire_date)}</td>
+                    <td>${user.department_name}</td>
+                    <td>${user.position_name}</td>
+                    <td>${user.status_name}</td> <!-- Добавлено значение статуса -->
+                `;
+                dismissedUsersBody.appendChild(row);
+            });
+        };
+
+        fetchDismissedUsers();
+    </script>
+</body>
+</html>
